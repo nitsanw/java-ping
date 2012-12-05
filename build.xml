@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="java-ping" default="all" basedir=".">
+	<property name="dir.main.src" value="src" />
+	<property name="dir.main.build" value="target/java/classes" />
+	<property name="dir.main.dist" value="target/dist" />
+
+	<target name="clean" description="Remove the generated files">
+		<delete dir="target" />
+	</target>
+
+	<target name="prepare">
+		<mkdir dir="${dir.main.build}" />
+	</target>
+
+	<target name="build" depends="prepare" description="Build main source code">
+		<javac destdir="${dir.main.build}" includeAntRuntime="false" debug="true" nowarn="true">
+			<src path="${dir.main.src}" />
+		</javac>
+	</target>
+
+	<target name="dist" depends="build" description="Build a distribution">
+		<jar basedir="${dir.main.build}" destfile="${dir.main.dist}/lib/java-ping.jar" />
+	    <mkdir dir="${dir.main.dist}" />
+        <copy file="scripts/client.sh" todir="${dir.main.dist}" />
+        <copy file="scripts/server.sh" todir="${dir.main.dist}" />
+		<chmod perm="a+x" file="${dir.main.dist}/*.sh"/>
+		<zip destfile="target/java-ping.zip">
+			<fileset dir="${dir.main.dist}">
+			</fileset>
+		</zip>
+	</target>
+
+	<target name="all" depends="clean, build, dist" />
+</project>
