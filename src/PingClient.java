@@ -12,6 +12,7 @@ public class PingClient {
     public static void main(String[] args) throws IOException, InterruptedException {
         String host = args.length > 0 ? args[0] : "localhost";
         int port = args.length > 1 ? Integer.parseInt(args[1]) : 12345;
+        int messageSize = args.length > 2 ? Integer.parseInt(args[2]) : 32;
         System.out.println("Pinging "+host+":" + port);
         SocketChannel sc = SocketChannel.open(new InetSocketAddress(host, port));
 
@@ -21,7 +22,7 @@ public class PingClient {
         for (int i = -10000; i < times.length; i++) {
             long start = System.nanoTime();
             bb.position(0);
-            bb.limit(32);
+            bb.limit(messageSize);
             do{
         	sc.write(bb);
             }while(bb.hasRemaining());
@@ -31,7 +32,7 @@ public class PingClient {
             int bytesRead = 0;
             do{
         	bytesRead += sc.read(bb);
-            }while(bytesRead < 32);
+            }while(bytesRead < messageSize);
             long end = System.nanoTime();
             long err = System.nanoTime() - end;
             long time = end - start - err;

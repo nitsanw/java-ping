@@ -18,10 +18,7 @@ public class PingServer {
         ssc.socket().bind(new InetSocketAddress(nic, port));
         SocketChannel sc2 = null;
         try {
-            sc2 = ssc.accept();
-            configure(sc2);
-            sc2.configureBlocking(false);
-            close(ssc);
+            sc2 = accept(ssc);
             ByteBuffer bb2 = ByteBuffer.allocateDirect(4096);
             while (!Thread.interrupted()) {
                 bb2.clear();
@@ -40,6 +37,15 @@ public class PingServer {
             close(sc2);
         }
         System.in.read();
+    }
+    private static SocketChannel accept(final ServerSocketChannel ssc)
+	    throws IOException, SocketException {
+	SocketChannel sc2;
+	sc2 = ssc.accept();
+	configure(sc2);
+	sc2.configureBlocking(false);
+	close(ssc);
+	return sc2;
     }
     static void close(Closeable sc2) {
         if (sc2 != null) try {
