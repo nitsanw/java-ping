@@ -22,11 +22,16 @@ public class PingClient {
             long start = System.nanoTime();
             bb.position(0);
             bb.limit(32);
-            sc.write(bb);
+            do{
+        	sc.write(bb);
+            }while(bb.hasRemaining());
 
 
             bb.clear();
-            sc.read(bb);
+            int bytesRead = 0;
+            do{
+        	bytesRead += sc.read(bb);
+            }while(bytesRead < 32);
             long end = System.nanoTime();
             long err = System.nanoTime() - end;
             long time = end - start - err;
@@ -50,7 +55,8 @@ public class PingClient {
     }
 
 
-    static void configure(SocketChannel sc) throws SocketException {
+    static void configure(SocketChannel sc) throws IOException {
         sc.socket().setTcpNoDelay(true);
+        sc.configureBlocking(false);
     }
 }
