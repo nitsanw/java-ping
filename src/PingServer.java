@@ -15,6 +15,7 @@
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
@@ -26,7 +27,7 @@ public class PingServer {
 	String nic = args.length > 0 ? args[0] : "0.0.0.0";
 	int port = args.length > 1 ? Integer.parseInt(args[1]) : 12345;
 	System.out.println("Listening on interface : " + nic + ":" + port);
-	final ByteBuffer buffy = ByteBuffer.allocateDirect(PAGE_SIZE);
+	final ByteBuffer buffy = ByteBuffer.allocateDirect(PAGE_SIZE).order(ByteOrder.nativeOrder());
 	final ServerSocketChannel severSocket = ServerSocketChannel.open();
 	severSocket.socket().bind(new InetSocketAddress(nic, port));
 	SocketChannel accepted = null;

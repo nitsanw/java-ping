@@ -15,6 +15,7 @@
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.channels.SocketChannel;
 
 public class PingClient {
@@ -33,7 +34,7 @@ public class PingClient {
 	sc.socket().setTcpNoDelay(true);
 	sc.configureBlocking(false);
 
-	ByteBuffer buffy = ByteBuffer.allocateDirect(PAGE_SIZE);
+	ByteBuffer buffy = ByteBuffer.allocateDirect(PAGE_SIZE).order(ByteOrder.nativeOrder());
 
 	for(int i=0;i<10;i++){
 	    testLoop(messageSize, sc, buffy);
