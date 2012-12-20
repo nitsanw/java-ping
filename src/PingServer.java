@@ -28,14 +28,14 @@ public class PingServer {
 	int port = args.length > 1 ? Integer.parseInt(args[1]) : 12345;
 	System.out.println("Listening on interface : " + nic + ":" + port);
 	final ByteBuffer buffy = ByteBuffer.allocateDirect(PAGE_SIZE).order(ByteOrder.nativeOrder());
-	final ServerSocketChannel severSocket = ServerSocketChannel.open();
-	severSocket.socket().bind(new InetSocketAddress(nic, port));
+	final ServerSocketChannel serverSocket = ServerSocketChannel.open();
+	serverSocket.socket().bind(new InetSocketAddress(nic, port));
 	SocketChannel accepted = null;
 	try {
-	    accepted = severSocket.accept();
+	    accepted = serverSocket.accept();
 	    accepted.socket().setTcpNoDelay(true);
 	    accepted.configureBlocking(false);
-	    severSocket.close();
+	    serverSocket.close();
 	    while (!Thread.interrupted()) {
 		buffy.clear();
 		do {
