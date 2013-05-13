@@ -19,7 +19,7 @@
 	</target>
 
 	<target name="dist" depends="build" description="Build a distribution">
-		<jar basedir="${dir.main.build}" destfile="${dir.main.dist}/lib/java-ping.jar" />
+		<jar basedir="${dir.main.build}" destfile="${dir.main.dist}/lib/java-ping.jar" manifest='resources/MANIFEST.MF'/>
 	    <mkdir dir="${dir.main.dist}" />
         <copy file="scripts/client.sh" todir="${dir.main.dist}" />
         <copy file="scripts/server.sh" todir="${dir.main.dist}" />
