@@ -28,7 +28,7 @@ public class PingClient {
 	String host = args.length > 0 ? args[0] : "localhost";
 	int port = args.length > 1 ? Integer.parseInt(args[1]) : 12345;
 	int messageSize = args.length > 2 ? Integer.parseInt(args[2]) : 32;
-	System.out.println("Pinging " + host + ":" + port);
+	System.out.println("Pinging " + host + ":" + port + " messages of size " + messageSize);
 	SocketChannel sc = SocketChannel
 		.open(new InetSocketAddress(host, port));
 	sc.socket().setTcpNoDelay(true);
