@@ -19,7 +19,7 @@ import java.nio.ByteOrder;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
-public class PingServer {
+public class TcpPingServer {
     private static final int PAGE_SIZE = 4096;
 
     public static void main(String[] args) throws IOException,

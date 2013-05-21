@@ -18,7 +18,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.SocketChannel;
 
-public class PingClient {
+public class TcpPingClient {
     private static final int PAGE_SIZE = 4096;
     private static final int ITERATIONS = 1000000;
     static Histogram hist = new Histogram(100, 1000);
