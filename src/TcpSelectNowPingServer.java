@@ -16,10 +16,12 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
-public class TcpPingServer {
+public class TcpSelectNowPingServer {
     private static final int PAGE_SIZE = 4096;
 
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -35,8 +37,13 @@ public class TcpPingServer {
             accepted.socket().setTcpNoDelay(true);
             accepted.configureBlocking(false);
             serverSocket.close();
+            Selector selector = Selector.open();
+            accepted.register(selector, SelectionKey.OP_READ);
             int read = 0;
             while (!Thread.interrupted()) {
+                while (selector.selectNow() == 0)
+                    ;
+                selector.selectedKeys().clear();
                 buffy.clear();
                 while ((read = accepted.read(buffy)) == 0)
                     ;

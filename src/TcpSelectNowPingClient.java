@@ -16,12 +16,15 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 
-public class TcpPingClient {
+public class TcpSelectNowPingClient {
     private static final int PAGE_SIZE = 4096;
     private static final int ITERATIONS = 100000;
     static Histogram hist = new Histogram(100, 1000);
+    private static Selector select;
 
     public static void main(String[] args) throws IOException, InterruptedException {
         String host = args.length > 0 ? args[0] : "localhost";
@@ -47,6 +50,11 @@ public class TcpPingClient {
     }
 
     private static void testLoop(int messageSize, SocketChannel sc, ByteBuffer buffy) throws IOException {
+        select = Selector.open();
+        while (!select.isOpen()) {
+            Thread.yield();
+        }
+        sc.register(select, SelectionKey.OP_READ);
         for (int i = -10000; i < ITERATIONS; i++) {
             long start = System.nanoTime();
             ping(sc, buffy, messageSize);
@@ -74,9 +82,11 @@ public class TcpPingClient {
         do {
             sc.write(bb);
         } while (bb.hasRemaining());
-
         // receive
         bb.clear();
+        while (select.selectNow() == 0)
+            Thread.yield();
+        select.selectedKeys().clear();
         int bytesRead = 0;
         do {
             bytesRead += sc.read(bb);

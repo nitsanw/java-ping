@@ -47,45 +47,43 @@ public final class Histogram {
      *            of the intervals.
      */
     public Histogram(final long[] upperBounds) {
-	validateBounds(upperBounds);
+        validateBounds(upperBounds);
 
-	this.upperBounds = Arrays.copyOf(upperBounds, upperBounds.length);
-	this.counts = new long[upperBounds.length];
+        this.upperBounds = Arrays.copyOf(upperBounds, upperBounds.length);
+        this.counts = new long[upperBounds.length];
     }
 
     public Histogram(int expLength) {
-	upperBounds = new long[expLength];
-	counts = new long[upperBounds.length];
-	long pow2 = 2;
-	for (int l = 0; l < expLength; l++) {
-	    upperBounds[l] = pow2;
-	    pow2 *= 2;
-	}
+        upperBounds = new long[expLength];
+        counts = new long[upperBounds.length];
+        long pow2 = 2;
+        for (int l = 0; l < expLength; l++) {
+            upperBounds[l] = pow2;
+            pow2 *= 2;
+        }
     }
 
     public Histogram(int length, int stepSize) {
-	upperBounds = new long[length];
-	counts = new long[upperBounds.length];
-	for (int l = 0; l < length; l++) {
-	    upperBounds[l] = l * stepSize;
-	}
+        upperBounds = new long[length];
+        counts = new long[upperBounds.length];
+        for (int l = 0; l < length; l++) {
+            upperBounds[l] = l * stepSize;
+        }
     }
 
     private void validateBounds(final long[] upperBounds) {
-	long lastBound = -1L;
-	for (final long bound : upperBounds) {
-	    if (bound <= 0L) {
-		throw new IllegalArgumentException(
-			"Bounds must be positive values");
-	    }
+        long lastBound = -1L;
+        for (final long bound : upperBounds) {
+            if (bound <= 0L) {
+                throw new IllegalArgumentException("Bounds must be positive values");
+            }
 
-	    if (bound <= lastBound) {
-		throw new IllegalArgumentException("bound " + bound
-			+ " is not greater than " + lastBound);
-	    }
+            if (bound <= lastBound) {
+                throw new IllegalArgumentException("bound " + bound + " is not greater than " + lastBound);
+            }
 
-	    lastBound = bound;
-	}
+            lastBound = bound;
+        }
     }
 
     /**
@@ -94,7 +92,7 @@ public final class Histogram {
      * @return size of the interval bar list.
      */
     public int getSize() {
-	return upperBounds.length;
+        return upperBounds.length;
     }
 
     /**
@@ -105,7 +103,7 @@ public final class Histogram {
      * @return the interval upper bound for the index.
      */
     public long getUpperBoundAt(final int index) {
-	return upperBounds[index];
+        return upperBounds[index];
     }
 
     /**
@@ -116,7 +114,7 @@ public final class Histogram {
      * @return the count of observations at a given index.
      */
     public long getCountAt(final int index) {
-	return counts[index];
+        return counts[index];
     }
 
     /**
@@ -128,41 +126,41 @@ public final class Histogram {
      * @return return true if in the range of intervals otherwise false.
      */
     public boolean addObservation(final long value) {
-	observationsCount++;
-	trackRange(value);
+        observationsCount++;
+        trackRange(value);
 
-	int low = 0;
-	int high = upperBounds.length - 1;
+        int low = 0;
+        int high = upperBounds.length - 1;
 
-	while (low < high) {
-	    int mid = low + ((high - low) >> 1);
-	    if (upperBounds[mid] < value) {
-		low = mid + 1;
-	    } else {
-		high = mid;
-	    }
-	}
+        while (low < high) {
+            int mid = low + ((high - low) >> 1);
+            if (upperBounds[mid] < value) {
+                low = mid + 1;
+            } else {
+                high = mid;
+            }
+        }
 
-	if (value <= upperBounds[high]) {
-	    counts[high]++;
-	    return true;
-	} else if (high == 0) {
-	    underflows++;
-	} else {
-	    overflows++;
-	}
+        if (value <= upperBounds[high]) {
+            counts[high]++;
+            return true;
+        } else if (high == 0) {
+            underflows++;
+        } else {
+            overflows++;
+        }
 
-	return false;
+        return false;
     }
 
     private void trackRange(final long value) {
-	if (value < minValue) {
-	    minValue = value;
-	}
+        if (value < minValue) {
+            minValue = value;
+        }
 
-	if (value > maxValue) {
-	    maxValue = value;
-	}
+        if (value > maxValue) {
+            maxValue = value;
+        }
     }
 
     /**
@@ -173,41 +171,39 @@ public final class Histogram {
      *            from which to add the observation counts.
      */
     public void addObservations(final Histogram histogram) {
-	if (upperBounds.length != histogram.upperBounds.length) {
-	    throw new IllegalArgumentException(
-		    "Histograms must have matching intervals");
-	}
+        if (upperBounds.length != histogram.upperBounds.length) {
+            throw new IllegalArgumentException("Histograms must have matching intervals");
+        }
 
-	for (int i = 0, size = upperBounds.length; i < size; i++) {
-	    if (upperBounds[i] != histogram.upperBounds[i]) {
-		throw new IllegalArgumentException(
-			"Histograms must have matching intervals");
-	    }
-	}
+        for (int i = 0, size = upperBounds.length; i < size; i++) {
+            if (upperBounds[i] != histogram.upperBounds[i]) {
+                throw new IllegalArgumentException("Histograms must have matching intervals");
+            }
+        }
 
-	for (int i = 0, size = counts.length; i < size; i++) {
-	    counts[i] += histogram.counts[i];
-	}
+        for (int i = 0, size = counts.length; i < size; i++) {
+            counts[i] += histogram.counts[i];
+        }
 
-	trackRange(histogram.minValue);
-	trackRange(histogram.maxValue);
-	overflows += histogram.overflows;
-	underflows += histogram.underflows;
-	observationsCount += histogram.observationsCount;
+        trackRange(histogram.minValue);
+        trackRange(histogram.maxValue);
+        overflows += histogram.overflows;
+        underflows += histogram.underflows;
+        observationsCount += histogram.observationsCount;
     }
 
     /**
      * Clear the list of interval counters.
      */
     public void clear() {
-	maxValue = 0L;
-	minValue = Long.MAX_VALUE;
-	observationsCount = 0L;
-	overflows = 0;
-	underflows = 0;
-	for (int i = 0, size = counts.length; i < size; i++) {
-	    counts[i] = 0L;
-	}
+        maxValue = 0L;
+        minValue = Long.MAX_VALUE;
+        observationsCount = 0L;
+        overflows = 0;
+        underflows = 0;
+        for (int i = 0, size = counts.length; i < size; i++) {
+            counts[i] = 0L;
+        }
     }
 
     /**
@@ -216,13 +212,13 @@ public final class Histogram {
      * @return the total number of recorded observations.
      */
     public long getCount() {
-	long count = 0L;
+        long count = 0L;
 
-	for (int i = 0, size = counts.length; i < size; i++) {
-	    count += counts[i];
-	}
+        for (int i = 0, size = counts.length; i < size; i++) {
+            count += counts[i];
+        }
 
-	return count;
+        return count;
     }
 
     /**
@@ -231,7 +227,7 @@ public final class Histogram {
      * @return the minimum value observed.
      */
     public long getMin() {
-	return minValue;
+        return minValue;
     }
 
     /**
@@ -240,7 +236,7 @@ public final class Histogram {
      * @return the maximum of the observed values;
      */
     public long getMax() {
-	return maxValue;
+        return maxValue;
     }
 
     /**
@@ -254,28 +250,26 @@ public final class Histogram {
      * @return the mean of all recorded observations.
      */
     public BigDecimal getMean() {
-	if (0L == getCount()) {
-	    return BigDecimal.ZERO;
-	}
+        if (0L == getCount()) {
+            return BigDecimal.ZERO;
+        }
 
-	long lowerBound = counts[0] > 0L ? minValue : 0L;
-	BigDecimal total = BigDecimal.ZERO;
+        long lowerBound = counts[0] > 0L ? minValue : 0L;
+        BigDecimal total = BigDecimal.ZERO;
 
-	for (int i = 0, size = upperBounds.length; i < size; i++) {
-	    if (0L != counts[i]) {
-		long upperBound = Math.min(upperBounds[i], maxValue);
-		long midPoint = lowerBound + ((upperBound - lowerBound) / 2L);
+        for (int i = 0, size = upperBounds.length; i < size; i++) {
+            if (0L != counts[i]) {
+                long upperBound = Math.min(upperBounds[i], maxValue);
+                long midPoint = lowerBound + ((upperBound - lowerBound) / 2L);
 
-		BigDecimal intervalTotal = new BigDecimal(midPoint)
-			.multiply(new BigDecimal(counts[i]));
-		total = total.add(intervalTotal);
-	    }
+                BigDecimal intervalTotal = new BigDecimal(midPoint).multiply(new BigDecimal(counts[i]));
+                total = total.add(intervalTotal);
+            }
 
-	    lowerBound = Math.max(upperBounds[i] + 1L, minValue);
-	}
+            lowerBound = Math.max(upperBounds[i] + 1L, minValue);
+        }
 
-	return total
-		.divide(new BigDecimal(getCount()), 2, RoundingMode.HALF_UP);
+        return total.divide(new BigDecimal(getCount()), 2, RoundingMode.HALF_UP);
     }
 
     /**
@@ -284,7 +278,7 @@ public final class Histogram {
      * @return the upper bound for 99% of observations.
      */
     public long getMedianUpperBound() {
-	return getUpperBoundForFactor(0.5d);
+        return getUpperBoundForFactor(0.5d);
     }
 
     /**
@@ -293,7 +287,7 @@ public final class Histogram {
      * @return the upper bound for 99% of observations.
      */
     public long getTwoNinesUpperBound() {
-	return getUpperBoundForFactor(0.99d);
+        return getUpperBoundForFactor(0.99d);
     }
 
     /**
@@ -302,7 +296,7 @@ public final class Histogram {
      * @return the upper bound for 99.99% of observations.
      */
     public long getFourNinesUpperBound() {
-	return getUpperBoundForFactor(0.9999d);
+        return getUpperBoundForFactor(0.9999d);
     }
 
     /**
@@ -314,92 +308,89 @@ public final class Histogram {
      * @return the interval upper bound.
      */
     public long getUpperBoundForFactor(final double factor) {
-	if (0.0d >= factor || factor >= 1.0d) {
-	    throw new IllegalArgumentException(
-		    "factor must be >= 0.0 and <= 1.0");
-	}
+        if (0.0d >= factor || factor >= 1.0d) {
+            throw new IllegalArgumentException("factor must be >= 0.0 and <= 1.0");
+        }
 
-	final long totalCount = getCount();
-	final long tailTotal = totalCount - Math.round(totalCount * factor);
-	long tailCount = 0L;
+        final long totalCount = getCount();
+        final long tailTotal = totalCount - Math.round(totalCount * factor);
+        long tailCount = 0L;
 
-	for (int i = counts.length - 1; i >= 0; i--) {
-	    if (0L != counts[i]) {
-		tailCount += counts[i];
-		if (tailCount >= tailTotal) {
-		    return upperBounds[i];
-		}
-	    }
-	}
+        for (int i = counts.length - 1; i >= 0; i--) {
+            if (0L != counts[i]) {
+                tailCount += counts[i];
+                if (tailCount >= tailTotal) {
+                    return upperBounds[i];
+                }
+            }
+        }
 
-	return 0L;
+        return 0L;
     }
 
     @Override
     public String toString() {
-	return toLatencyString(false);
+        return toLatencyString(false);
     }
 
     public String toLatencyString(boolean shortFormat) {
-	StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
 
-	sb.append("LatencyHistogram{");
+        sb.append("LatencyHistogram{");
 
-	sb.append("count=").append(observationsCount).append(", ");
-	sb.append("underflows=").append(underflows).append(", ");
-	sb.append("min=").append(getMin()).append(", ");
-	sb.append("max=").append(getMax()).append(", ");
-	sb.append("overflows=").append(overflows).append(", ");
-	sb.append("mean=").append(getMean()).append(", ");
-	sb.append("50%=").append(getMedianUpperBound()).append(", ");
-	sb.append("99%=").append(getTwoNinesUpperBound()).append(", ");
-	sb.append("99.99%=").append(getFourNinesUpperBound());
-	if (!shortFormat) {
-	    sb.append(", ");
+        sb.append("count=").append(observationsCount).append(", ");
+        sb.append("underflows=").append(underflows).append(", ");
+        sb.append("min=").append(getMin()).append(", ");
+        sb.append("max=").append(getMax()).append(", ");
+        sb.append("overflows=").append(overflows).append(", ");
+        sb.append("mean=").append(getMean()).append(", ");
+        sb.append("50%=").append(getMedianUpperBound()).append(", ");
+        sb.append("99%=").append(getTwoNinesUpperBound()).append(", ");
+        sb.append("99.99%=").append(getFourNinesUpperBound());
+        if (!shortFormat) {
+            sb.append(", ");
 
-	    sb.append('[');
-	    for (int i = 0, size = counts.length; i < size; i++) {
-		sb.append(upperBounds[i]).append('=').append(counts[i])
-			.append(", ");
-	    }
+            sb.append('[');
+            for (int i = 0, size = counts.length; i < size; i++) {
+                sb.append(upperBounds[i]).append('=').append(counts[i]).append(", ");
+            }
 
-	    if (counts.length > 0) {
-		sb.setLength(sb.length() - 2);
-	    }
-	    sb.append(']');
-	}
-	sb.append('}');
+            if (counts.length > 0) {
+                sb.setLength(sb.length() - 2);
+            }
+            sb.append(']');
+        }
+        sb.append('}');
 
-	return sb.toString();
+        return sb.toString();
     }
 
     public String toThrouphputString(boolean shortFormat) {
-	StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
 
-	sb.append("ThroughputHistogram{");
+        sb.append("ThroughputHistogram{");
 
-	sb.append("count=").append(observationsCount).append(", ");
-	sb.append("min=").append(getMin()).append(", ");
-	sb.append("max=").append(getMax()).append(", ");
-	sb.append("mean=").append(getMean()).append(", ");
-	sb.append("99%=").append(getUpperBoundForFactor(0.01)).append(", ");
-	sb.append("99.99%=").append(getUpperBoundForFactor(0.0001));
-	if (!shortFormat) {
-	    sb.append(", ");
+        sb.append("count=").append(observationsCount).append(", ");
+        sb.append("min=").append(getMin()).append(", ");
+        sb.append("max=").append(getMax()).append(", ");
+        sb.append("mean=").append(getMean()).append(", ");
+        sb.append("99%=").append(getUpperBoundForFactor(0.01)).append(", ");
+        sb.append("99.99%=").append(getUpperBoundForFactor(0.0001));
+        if (!shortFormat) {
+            sb.append(", ");
 
-	    sb.append('[');
-	    for (int i = 0, size = counts.length; i < size; i++) {
-		sb.append(upperBounds[i]).append('=').append(counts[i])
-			.append(", ");
-	    }
+            sb.append('[');
+            for (int i = 0, size = counts.length; i < size; i++) {
+                sb.append(upperBounds[i]).append('=').append(counts[i]).append(", ");
+            }
 
-	    if (counts.length > 0) {
-		sb.setLength(sb.length() - 2);
-	    }
-	    sb.append(']');
-	}
-	sb.append('}');
+            if (counts.length > 0) {
+                sb.setLength(sb.length() - 2);
+            }
+            sb.append(']');
+        }
+        sb.append('}');
 
-	return sb.toString();
+        return sb.toString();
     }
 }
