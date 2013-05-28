@@ -16,25 +16,29 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.SocketChannel;
+import java.nio.channels.DatagramChannel;
 
-public class TcpSelectNowPingClient {
+public class UdpPingClient {
     private static final int PAGE_SIZE = 4096;
     private static final int ITERATIONS = 100000;
     static Histogram hist = new Histogram(1000, 1000);
-    private static Selector select;
 
     public static void main(String[] args) throws IOException, InterruptedException {
         String host = args.length > 0 ? args[0] : "localhost";
         int port = args.length > 1 ? Integer.parseInt(args[1]) : 12345;
+        int localport = args.length > 1 ? Integer.parseInt(args[1]) : 22345;
         int messageSize = args.length > 2 ? Integer.parseInt(args[2]) : 32;
         System.out.println("Pinging " + host + ":" + port);
-        SocketChannel sc = SocketChannel.open(new InetSocketAddress(host, port));
-        sc.socket().setTcpNoDelay(true);
+        DatagramChannel sc = DatagramChannel.open();
         sc.configureBlocking(false);
+        // bind local
+        sc.socket().bind(new InetSocketAddress("localhost", localport));
+        // connect remote
+        sc.socket().connect(new InetSocketAddress(host, port));
+        while (!sc.isConnected())
+            ;
 
+        Thread.sleep(10000);
         ByteBuffer buffy = ByteBuffer.allocateDirect(PAGE_SIZE).order(ByteOrder.nativeOrder());
 
         for (int i = 0; i < 10; i++) {
@@ -49,12 +53,7 @@ public class TcpSelectNowPingClient {
         }
     }
 
-    private static void testLoop(int messageSize, SocketChannel sc, ByteBuffer buffy) throws IOException {
-        select = Selector.open();
-        while (!select.isOpen()) {
-            Thread.yield();
-        }
-        sc.register(select, SelectionKey.OP_READ);
+    private static void testLoop(int messageSize, DatagramChannel sc, ByteBuffer buffy) throws IOException {
         for (int i = -10000; i < ITERATIONS; i++) {
             long start = System.nanoTime();
             ping(sc, buffy, messageSize);
@@ -75,18 +74,16 @@ public class TcpSelectNowPingClient {
         System.out.println(hist.toLatencyString(true));
     }
 
-    private static void ping(SocketChannel sc, ByteBuffer bb, int messageSize) throws IOException {
+    private static void ping(DatagramChannel sc, ByteBuffer bb, int messageSize) throws IOException {
         // send
         bb.position(0);
         bb.limit(messageSize);
         do {
             sc.write(bb);
         } while (bb.hasRemaining());
+
         // receive
         bb.clear();
-        while (select.selectNow() == 0)
-            Thread.yield();
-        select.selectedKeys().clear();
         int bytesRead = 0;
         do {
             bytesRead += sc.read(bb);

@@ -21,7 +21,7 @@ import java.nio.channels.SocketChannel;
 public class TcpPingClient {
     private static final int PAGE_SIZE = 4096;
     private static final int ITERATIONS = 100000;
-    static Histogram hist = new Histogram(100, 1000);
+    static Histogram hist = new Histogram(1000, 1000);
 
     public static void main(String[] args) throws IOException, InterruptedException {
         String host = args.length > 0 ? args[0] : "localhost";

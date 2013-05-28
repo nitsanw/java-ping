@@ -23,7 +23,7 @@ import java.nio.channels.SocketChannel;
 public class TcpSelectPingClient {
     private static final int PAGE_SIZE = 4096;
     private static final int ITERATIONS = 100000;
-    static Histogram hist = new Histogram(100, 1000);
+    static Histogram hist = new Histogram(1000, 1000);
     private static Selector select;
 
     public static void main(String[] args) throws IOException, InterruptedException {
