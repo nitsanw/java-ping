@@ -7,15 +7,17 @@ public class PingMain {
             System.exit(1);
         }
         int exitCode = 0;
-        String[] restOfArgs = Arrays.copyOfRange(args, 2, args.length);
         try {
             String role = args[0];
             String type = args[1];
+            String[] restOfArgs = Arrays.copyOfRange(args, 2, args.length);
 
             if ("-server".equalsIgnoreCase(role)) {
                 exitCode = 2;
                 if ("-spin".equals(type)) {
-                    TcpPingServer.main(restOfArgs);
+                    TcpBusyPingServer.main(restOfArgs);
+                } else if ("-block".equals(type)) {
+                    TcpBlockingPingServer.main(restOfArgs);
                 } else if ("-select".equals(type)) {
                     TcpSelectPingServer.main(restOfArgs);
                 } else if ("-selectNow".equals(type)) {
@@ -27,7 +29,9 @@ public class PingMain {
             } else if ("-client".equalsIgnoreCase(role)) {
                 exitCode = 3;
                 if ("-spin".equals(type)) {
-                    TcpPingClient.main(restOfArgs);
+                    TcpBusyPingClient.main(restOfArgs);
+                } else if ("-block".equals(type)) {
+                    TcpBlockingPingClient.main(restOfArgs);
                 } else if ("-select".equals(type)) {
                     TcpSelectPingClient.main(restOfArgs);
                 } else if ("-selectNow".equals(type)) {

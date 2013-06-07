@@ -39,7 +39,7 @@ public class IpcPingServer {
 
         // wait for server to set counter
         for (int i = 0; i < 10; i++) {
-            for (long counter = -10000; counter < ITERATIONS; counter++) {
+            for (long counter = 0; counter < ITERATIONS; counter++) {
                 while (!UnsafeAccess.unsafe.compareAndSwapLong(null, inCounterAddress, counter, counter))
                     ;
                 // copy message from out to in

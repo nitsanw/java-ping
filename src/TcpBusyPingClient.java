@@ -13,27 +13,13 @@
  */
 
 import java.io.IOException;
-import java.net.SocketException;
 import java.nio.ByteBuffer;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
 
-public class TcpSelectNowPingClient extends TcpPingClient {
-    Selector select;
-
-    public TcpSelectNowPingClient(String[] args) throws IOException, InterruptedException {
+public class TcpBusyPingClient extends TcpPingClient {
+    public TcpBusyPingClient(String[] args) throws IOException, InterruptedException {
         super(args);
     }
-    @Override
-    void initChannel() throws IOException, SocketException {
-        super.initChannel();
-        select = Selector.open();
-        while (!select.isOpen()) {
-            Thread.yield();
-        }
-        channel.register(select, SelectionKey.OP_READ);
-    }
-    @Override
+
     void ping(ByteBuffer bb) throws IOException {
         // send
         bb.position(0);
@@ -41,22 +27,15 @@ public class TcpSelectNowPingClient extends TcpPingClient {
         do {
             channel.write(bb);
         } while (bb.hasRemaining());
-        bb.clear();
-        // select
-        select();
 
         // receive
+        bb.clear();
         int bytesRead = 0;
         do {
             bytesRead += channel.read(bb);
-        } while (bytesRead < messageSize);    
-    }
-    void select() throws IOException {
-        while (select.selectNow() == 0)
-            Thread.yield();
-        select.selectedKeys().clear();
+        } while (bytesRead < messageSize);
     }
     public static void main(String[] args) throws IOException, InterruptedException {
-        new TcpSelectNowPingClient(args);
+        new TcpBusyPingClient(args);
     }
 }

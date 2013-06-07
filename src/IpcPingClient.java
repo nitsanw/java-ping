@@ -3,10 +3,11 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
+import java.util.Arrays;
 
 public class IpcPingClient {
     private static final int ITERATIONS = 1000000;
-    static Histogram hist = new Histogram(100000, 10);
+    private static final long[] HISTOGTAM = new long[ITERATIONS];
 
     public static void main(String[] args) throws IOException, InterruptedException {
         int messageSize = args.length > 0 ? Integer.parseInt(args[0]) : 32;
@@ -15,10 +16,10 @@ public class IpcPingClient {
             System.exit(-1);
         }
         ByteBuffer buffy = channel.map(MapMode.READ_WRITE, 0, 2 * messageSize + 16 + 64 * 3);
+        System.out.println("Min,50%,90%,99%,99.9%,99.99%,Max");
 
         for (int i = 0; i < 10; i++) {
             testLoop(messageSize, buffy);
-            hist.clear();
         }
         channel.close();
     }
@@ -29,8 +30,7 @@ public class IpcPingClient {
         final long outCounterAddress = inDataAddress + 64 + messageSize;
         final long outDataAddress = outCounterAddress + 8;
         // set client counter
-        long sendCounterAddress = inDataAddress + messageSize;
-        for (long i = -10000; i < ITERATIONS; i++) {
+        for (int i = 0; i < ITERATIONS; i++) {
             long start = System.nanoTime();
             // copy message from in to out
             UnsafeAccess.unsafe.copyMemory(inDataAddress, outDataAddress, messageSize);
@@ -44,14 +44,13 @@ public class IpcPingClient {
         }
         report();
     }
-
-    private static void observe(long i, long time) {
-        hist.addObservation(time);
-        if (i == 0)
-            hist.clear();
+    private static void observe(int i, long time) {
+        HISTOGTAM[i]=time;
     }
 
     private static void report() {
-        System.out.println(hist.toLatencyString(true));
+        Arrays.sort(HISTOGTAM);
+        System.out.printf("%d,%d,%d,%d,%d,%d,%d\n",HISTOGTAM[0],HISTOGTAM[ITERATIONS/2],HISTOGTAM[(int)(ITERATIONS*0.9)],HISTOGTAM[(int)(ITERATIONS*0.99)],HISTOGTAM[(int)(ITERATIONS*0.999)],HISTOGTAM[(int)(ITERATIONS*0.9999)],HISTOGTAM[ITERATIONS-1] );
     }
+
 }

@@ -14,22 +14,21 @@
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.SocketException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.channels.DatagramChannel;
 
-public class UdpPingClient {
-    private static final int PAGE_SIZE = 4096;
-    private static final int ITERATIONS = 100000;
-    static Histogram hist = new Histogram(1000, 1000);
+public class UdpPingClient extends AbstractPingClient {
+    private DatagramChannel sc;
+    private int localport;
 
-    public static void main(String[] args) throws IOException, InterruptedException {
-        String host = args.length > 0 ? args[0] : "localhost";
-        int port = args.length > 1 ? Integer.parseInt(args[1]) : 12345;
-        int localport = args.length > 1 ? Integer.parseInt(args[1]) : 22345;
-        int messageSize = args.length > 2 ? Integer.parseInt(args[2]) : 32;
-        System.out.println("Pinging " + host + ":" + port);
-        DatagramChannel sc = DatagramChannel.open();
+    public UdpPingClient(String[] args) throws IOException, InterruptedException {
+        super(args);
+    }
+
+    @Override
+    void initChannel() throws IOException, SocketException {
+        sc = DatagramChannel.open();
         sc.configureBlocking(false);
         // bind local
         sc.socket().bind(new InetSocketAddress("localhost", localport));
@@ -37,14 +36,10 @@ public class UdpPingClient {
         sc.socket().connect(new InetSocketAddress(host, port));
         while (!sc.isConnected())
             ;
+    }
 
-        Thread.sleep(10000);
-        ByteBuffer buffy = ByteBuffer.allocateDirect(PAGE_SIZE).order(ByteOrder.nativeOrder());
-
-        for (int i = 0; i < 10; i++) {
-            testLoop(messageSize, sc, buffy);
-            hist.clear();
-        }
+    @Override
+    void cleanup() {
         if (sc != null) {
             try {
                 sc.close();
@@ -53,28 +48,8 @@ public class UdpPingClient {
         }
     }
 
-    private static void testLoop(int messageSize, DatagramChannel sc, ByteBuffer buffy) throws IOException {
-        for (int i = -10000; i < ITERATIONS; i++) {
-            long start = System.nanoTime();
-            ping(sc, buffy, messageSize);
-            long end = System.nanoTime();
-            long time = end - start;
-            observe(i, time);
-        }
-        report();
-    }
-
-    private static void observe(int i, long time) {
-        hist.addObservation(time);
-        if (i == 0)
-            hist.clear();
-    }
-
-    private static void report() {
-        System.out.println(hist.toLatencyString(true));
-    }
-
-    private static void ping(DatagramChannel sc, ByteBuffer bb, int messageSize) throws IOException {
+    @Override
+    void ping(ByteBuffer bb) throws IOException {
         // send
         bb.position(0);
         bb.limit(messageSize);
@@ -88,5 +63,19 @@ public class UdpPingClient {
         do {
             bytesRead += sc.read(bb);
         } while (bytesRead < messageSize);
+    }
+
+    @Override
+    void initParameters(String[] args) {
+        host = args.length > 0 ? args[0] : "localhost";
+        port = args.length > 1 ? Integer.parseInt(args[1]) : 12345;
+        localport = args.length > 1 ? Integer.parseInt(args[1]) : 22345;
+        messageSize = args.length > 2 ? Integer.parseInt(args[2]) : 32;
+        System.out.println("Pinging " + host + ":" + port + 
+                "(local:" + localport + ") messages of size " + messageSize);
+    }
+
+    public static void main(String[] args) throws IOException, InterruptedException {
+        new UdpPingClient(args);
     }
 }

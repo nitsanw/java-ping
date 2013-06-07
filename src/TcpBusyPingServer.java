@@ -19,7 +19,7 @@ import java.nio.ByteOrder;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
-public class TcpPingServer {
+public class TcpBusyPingServer {
     private static final int PAGE_SIZE = 4096;
 
     public static void main(String[] args) throws IOException, InterruptedException {
