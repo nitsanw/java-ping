@@ -41,12 +41,14 @@ public class TcpSelectPingServer {
             accepted.register(selector, SelectionKey.OP_READ);
             int read = 0;
             while (!Thread.interrupted()) {
-                while (selector.select() == 0)
-                    ;
+                while (selector.select() == 0) {
+                    // Shouldn't happen, why wake me up if you got nothing to say?
+                }
                 selector.selectedKeys().clear();
                 buffy.clear();
-                while ((read = accepted.read(buffy)) == 0)
-                    ;
+                while ((read = accepted.read(buffy)) == 0) {
+                    // Shouldn't happen, we got called on getting selected for READ, or invalid...
+                }
                 if (read == -1)
                     return;
                 buffy.flip();

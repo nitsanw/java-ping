@@ -15,8 +15,8 @@
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public class TcpBusyPingClient extends TcpPingClient {
-    public TcpBusyPingClient(String[] args) throws IOException, InterruptedException {
+public class TcpSpinPingClient extends TcpPingClient {
+    public TcpSpinPingClient(String[] args) throws IOException, InterruptedException {
         super(args);
     }
 
@@ -36,6 +36,6 @@ public class TcpBusyPingClient extends TcpPingClient {
         } while (bytesRead < messageSize);
     }
     public static void main(String[] args) throws IOException, InterruptedException {
-        new TcpBusyPingClient(args);
+        new TcpSpinPingClient(args);
     }
 }

@@ -15,7 +15,7 @@ public class PingMain {
             if ("-server".equalsIgnoreCase(role)) {
                 exitCode = 2;
                 if ("-spin".equals(type)) {
-                    TcpBusyPingServer.main(restOfArgs);
+                    TcpSpinPingServer.main(restOfArgs);
                 } else if ("-block".equals(type)) {
                     TcpBlockingPingServer.main(restOfArgs);
                 } else if ("-select".equals(type)) {
@@ -29,7 +29,7 @@ public class PingMain {
             } else if ("-client".equalsIgnoreCase(role)) {
                 exitCode = 3;
                 if ("-spin".equals(type)) {
-                    TcpBusyPingClient.main(restOfArgs);
+                    TcpSpinPingClient.main(restOfArgs);
                 } else if ("-block".equals(type)) {
                     TcpBlockingPingClient.main(restOfArgs);
                 } else if ("-select".equals(type)) {
@@ -60,10 +60,10 @@ public class PingMain {
     public static void usage() {
         System.out.println("java-ping:");
         System.out.println("\t<no-args>\tthis usage");
-        System.out.println("\t-server [-spin|-select|-selectNow] <interface> <port>\t");
+        System.out.println("\t-server [-spin|-block|-select|-selectNow] <interface> <port>\t");
         System.out.println("\t    defaults: interface = 0.0.0.0");
         System.out.println("\t              port = 12345");
-        System.out.println("\t-client [-spin|-select|-selectNow] <host> <port> <message-size>\t");
+        System.out.println("\t-client [-spin|-block|-select|-selectNow] <host> <port> <message-size>\t");
         System.out.println("\t    defaults: host = localhost");
         System.out.println("\t              port = 12345");
         System.out.println("\t              message-size = 32");

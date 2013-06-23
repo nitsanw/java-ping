@@ -19,7 +19,7 @@ import java.nio.ByteOrder;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
-public class TcpBusyPingServer {
+public class TcpSpinPingServer {
     private static final int PAGE_SIZE = 4096;
 
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -38,8 +38,10 @@ public class TcpBusyPingServer {
             int read = 0;
             while (!Thread.interrupted()) {
                 buffy.clear();
-                while ((read = accepted.read(buffy)) == 0)
-                    ;
+                while ((read = accepted.read(buffy)) == 0) {
+                    // spin, you may want to put a yield in here
+                }
+
                 if (read == -1)
                     return;
                 buffy.flip();
