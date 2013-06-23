@@ -1,5 +1,4 @@
 import java.io.IOException;
-import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
@@ -8,12 +7,12 @@ import java.util.Arrays;
 public abstract class AbstractPingClient {
     private static final int PAGE_SIZE = 4096;
     private static final int ITERATIONS = 100000;
-    private static final long[] HISTOGTAM = new long[ITERATIONS];
+    private static final long[] HISTOGRAM = new long[ITERATIONS];
     int messageSize;
     int port;
     String host;
 
-    public AbstractPingClient(String[] args) throws IOException, InterruptedException {
+    public AbstractPingClient(String[] args) throws IOException {
         initParameters(args);
         initChannel();
 
@@ -26,7 +25,7 @@ public abstract class AbstractPingClient {
         cleanup();
     }
 
-    abstract void initChannel() throws IOException, SocketException;
+    abstract void initChannel() throws IOException;
 
     abstract void cleanup();
 
@@ -48,12 +47,12 @@ public abstract class AbstractPingClient {
     }
 
     private static void observe(int i, long time) {
-        HISTOGTAM[i]=time;
+        HISTOGRAM[i]=time;
     }
 
     private static void report() {
-        Arrays.sort(HISTOGTAM);
-        System.out.printf("%d,%d,%d,%d,%d,%d,%d\n",HISTOGTAM[0],HISTOGTAM[ITERATIONS/2],HISTOGTAM[(int)(ITERATIONS*0.9)],HISTOGTAM[(int)(ITERATIONS*0.99)],HISTOGTAM[(int)(ITERATIONS*0.999)],HISTOGTAM[(int)(ITERATIONS*0.9999)],HISTOGTAM[ITERATIONS-1] );
+        Arrays.sort(HISTOGRAM);
+        System.out.printf("%d,%d,%d,%d,%d,%d,%d\n", HISTOGRAM[0], HISTOGRAM[ITERATIONS/2], HISTOGRAM[(int)(ITERATIONS*0.9)], HISTOGRAM[(int)(ITERATIONS*0.99)], HISTOGRAM[(int)(ITERATIONS*0.999)], HISTOGRAM[(int)(ITERATIONS*0.9999)], HISTOGRAM[ITERATIONS-1] );
     }
 
     abstract void ping(ByteBuffer bb) throws IOException;

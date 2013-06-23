@@ -7,7 +7,7 @@ import java.util.Arrays;
 
 public class IpcPingClient {
     private static final int ITERATIONS = 1000000;
-    private static final long[] HISTOGTAM = new long[ITERATIONS];
+    private static final long[] HISTOGRAM = new long[ITERATIONS];
 
     public static void main(String[] args) throws IOException, InterruptedException {
         int messageSize = args.length > 0 ? Integer.parseInt(args[0]) : 32;
@@ -24,7 +24,7 @@ public class IpcPingClient {
         channel.close();
     }
 
-    private static void testLoop(int messageSize, ByteBuffer buffy) throws IOException {
+    private static void testLoop(int messageSize, ByteBuffer buffy) {
         final long inCounterAddress = UnsafeDirectByteBuffer.getAddress(buffy) + 64;
         final long inDataAddress = inCounterAddress + 8;
         final long outCounterAddress = inDataAddress + 64 + messageSize;
@@ -45,12 +45,12 @@ public class IpcPingClient {
         report();
     }
     private static void observe(int i, long time) {
-        HISTOGTAM[i]=time;
+        HISTOGRAM[i]=time;
     }
 
     private static void report() {
-        Arrays.sort(HISTOGTAM);
-        System.out.printf("%d,%d,%d,%d,%d,%d,%d\n",HISTOGTAM[0],HISTOGTAM[ITERATIONS/2],HISTOGTAM[(int)(ITERATIONS*0.9)],HISTOGTAM[(int)(ITERATIONS*0.99)],HISTOGTAM[(int)(ITERATIONS*0.999)],HISTOGTAM[(int)(ITERATIONS*0.9999)],HISTOGTAM[ITERATIONS-1] );
+        Arrays.sort(HISTOGRAM);
+        System.out.printf("%d,%d,%d,%d,%d,%d,%d\n", HISTOGRAM[0], HISTOGRAM[ITERATIONS/2], HISTOGRAM[(int)(ITERATIONS*0.9)], HISTOGRAM[(int)(ITERATIONS*0.99)], HISTOGRAM[(int)(ITERATIONS*0.999)], HISTOGRAM[(int)(ITERATIONS*0.9999)], HISTOGRAM[ITERATIONS-1] );
     }
 
 }

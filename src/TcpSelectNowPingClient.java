@@ -25,7 +25,7 @@ public class TcpSelectNowPingClient extends TcpPingClient {
         super(args);
     }
     @Override
-    void initChannel() throws IOException, SocketException {
+    void initChannel() throws IOException {
         super.initChannel();
         select = Selector.open();
         while (!select.isOpen()) {

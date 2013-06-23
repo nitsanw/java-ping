@@ -19,19 +19,6 @@ public class UnsafeDirectByteBuffer {
         return UnsafeAccess.unsafe.getLong(buffy, addressOffset);
     }
 
-    /**
-     * put byte and skip position update and boundary checks
-     * 
-     * @param buffy
-     * @param b
-     */
-    public static void putByte(long address, int position, byte b) {
-        UnsafeAccess.unsafe.putByte(address + (position << 0), b);
-    }
-
-    public static void putByte(long address, byte b) {
-        UnsafeAccess.unsafe.putByte(address, b);
-    }
 
     public static ByteBuffer allocateAlignedByteBuffer(int capacity, long align) {
         if (Long.bitCount(align) != 1) {

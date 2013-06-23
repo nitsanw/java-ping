@@ -10,7 +10,7 @@ public abstract class TcpPingClient extends AbstractPingClient {
     public TcpPingClient(String[] args) throws IOException, InterruptedException {
         super(args);
     }
-    void initChannel() throws IOException, SocketException {
+    void initChannel() throws IOException {
         channel = SocketChannel.open(new InetSocketAddress(host, port));
         channel.socket().setTcpNoDelay(true);
         channel.configureBlocking(isBlocking());

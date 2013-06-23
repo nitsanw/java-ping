@@ -27,7 +27,7 @@ public class UdpPingClient extends AbstractPingClient {
     }
 
     @Override
-    void initChannel() throws IOException, SocketException {
+    void initChannel() throws IOException {
         sc = DatagramChannel.open();
         sc.configureBlocking(false);
         // bind local
