@@ -41,12 +41,14 @@ public class TcpSelectNowPingServer {
             accepted.register(selector, SelectionKey.OP_READ);
             int read = 0;
             while (!Thread.interrupted()) {
-                while (selector.selectNow() == 0)
-                    ;
+                while (selector.selectNow() == 0){
+                    Helper.yield();
+                }
                 selector.selectedKeys().clear();
                 buffy.clear();
-                while ((read = accepted.read(buffy)) == 0)
-                    ;
+                while ((read = accepted.read(buffy)) == 0){
+                    Helper.yield();
+                }
                 if (read == -1)
                     return;
                 buffy.flip();

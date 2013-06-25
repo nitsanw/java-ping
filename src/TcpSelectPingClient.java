@@ -21,8 +21,9 @@ public class TcpSelectPingClient extends TcpSelectNowPingClient{
     
     @Override
     void select() throws IOException {
-        while (select.select() == 0)
-            ;
+        while (select.select() == 0) {
+            Helper.yield();
+        }
         select.selectedKeys().clear();
     }
     public static void main(String[] args) throws IOException, InterruptedException {

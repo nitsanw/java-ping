@@ -40,8 +40,9 @@ public class IpcPingServer {
         // wait for server to set counter
         for (int i = 0; i < 10; i++) {
             for (long counter = 0; counter < ITERATIONS; counter++) {
-                while (!UnsafeAccess.unsafe.compareAndSwapLong(null, inCounterAddress, counter, counter))
-                    ;
+                while (!UnsafeAccess.unsafe.compareAndSwapLong(null, inCounterAddress, counter, counter)){
+                    Helper.yield();
+                }
                 // copy message from out to in
                 UnsafeAccess.unsafe.copyMemory(outDataAddress, inDataAddress, messageSize);
                 // set client counter

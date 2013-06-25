@@ -41,8 +41,9 @@ public class UdpPingServer {
             int read = 0;
             while (!Thread.interrupted()) {
                 buffy.clear();
-                while ((read = sc.read(buffy)) == 0)
-                    ;
+                while ((read = sc.read(buffy)) == 0){
+                    Helper.yield();
+                }
                 if (read == -1)
                     return;
                 buffy.flip();

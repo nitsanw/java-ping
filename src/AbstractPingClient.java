@@ -42,6 +42,7 @@ public abstract class AbstractPingClient {
             ping(buffy);
             long end = System.nanoTime();
             observe(i, end - start);
+            Helper.waitSome();
         }
         report();
     }

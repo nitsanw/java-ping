@@ -52,8 +52,8 @@ public class TcpSelectNowPingClient extends TcpPingClient {
         } while (bytesRead < messageSize);    
     }
     void select() throws IOException {
-        while (select.selectNow() == 0)  {
-            // spin, you may want to put a yield in here
+        while (select.selectNow() == 0) {
+            Helper.yield();
         }
         select.selectedKeys().clear();
     }

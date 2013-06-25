@@ -39,7 +39,7 @@ public class TcpSpinPingServer {
             while (!Thread.interrupted()) {
                 buffy.clear();
                 while ((read = accepted.read(buffy)) == 0) {
-                    // spin, you may want to put a yield in here
+                    Helper.yield();
                 }
 
                 if (read == -1)

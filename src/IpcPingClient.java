@@ -36,8 +36,9 @@ public class IpcPingClient {
             UnsafeAccess.unsafe.copyMemory(inDataAddress, outDataAddress, messageSize);
             UnsafeAccess.unsafe.putOrderedLong(null, inCounterAddress, i);
             // wait for server to set counter
-            while (!UnsafeAccess.unsafe.compareAndSwapLong(null, outCounterAddress, i, i))
-                ;
+            while (!UnsafeAccess.unsafe.compareAndSwapLong(null, outCounterAddress, i, i)) {
+                Helper.yield();
+            }
             long end = System.nanoTime();
             long time = end - start;
             observe(i, time);

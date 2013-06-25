@@ -42,7 +42,7 @@ public class TcpSelectPingServer {
             int read = 0;
             while (!Thread.interrupted()) {
                 while (selector.select() == 0) {
-                    // Shouldn't happen, why wake me up if you got nothing to say?
+                    Helper.yield();
                 }
                 selector.selectedKeys().clear();
                 buffy.clear();
