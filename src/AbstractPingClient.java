@@ -8,6 +8,7 @@ public abstract class AbstractPingClient {
     private static final int PAGE_SIZE = 4096;
     private static final int ITERATIONS = 100000;
     private static final long[] HISTOGRAM = new long[ITERATIONS];
+    private static final int LOOP = Integer.getInteger("loop",30);
     int messageSize;
     int port;
     String host;
@@ -19,7 +20,7 @@ public abstract class AbstractPingClient {
         ByteBuffer buffy = ByteBuffer.allocateDirect(PAGE_SIZE).order(ByteOrder.nativeOrder());
         buffy.limit(messageSize);
         System.out.println("Min,50%,90%,99%,99.9%,99.99%,Max");
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < LOOP; i++) {
             testLoop(buffy);
         }
         cleanup();
