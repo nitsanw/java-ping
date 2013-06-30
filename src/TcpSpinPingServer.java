@@ -37,17 +37,7 @@ public class TcpSpinPingServer {
             serverSocket.close();
             int read = 0;
             while (!Thread.interrupted()) {
-                buffy.clear();
-                while ((read = accepted.read(buffy)) == 0) {
-                    Helper.yield();
-                }
-
-                if (read == -1)
-                    return;
-                buffy.flip();
-                do {
-                    accepted.write(buffy);
-                } while (buffy.hasRemaining());
+                if (pong(buffy, accepted)) return;
             }
         } finally {
             if (accepted != null) {
@@ -57,5 +47,21 @@ public class TcpSpinPingServer {
                 }
             }
         }
+    }
+
+    private static boolean pong(ByteBuffer buffy, SocketChannel accepted) throws IOException {
+        int read;
+        buffy.clear();
+        while ((read = accepted.read(buffy)) == 0) {
+            Helper.yield();
+        }
+
+        if (read == -1)
+            return true;
+        buffy.flip();
+        do {
+            accepted.write(buffy);
+        } while (buffy.hasRemaining());
+        return false;
     }
 }

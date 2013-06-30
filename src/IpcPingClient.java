@@ -32,20 +32,25 @@ public class IpcPingClient {
         final long outDataAddress = outCounterAddress + 8;
         // set client counter
         for (int i = 0; i < ITERATIONS; i++) {
-            long start = System.nanoTime();
-            // copy message from in to out
-            UnsafeAccess.unsafe.copyMemory(inDataAddress, outDataAddress, messageSize);
-            UnsafeAccess.unsafe.putOrderedLong(null, inCounterAddress, i);
-            // wait for server to set counter
-            while (!UnsafeAccess.unsafe.compareAndSwapLong(null, outCounterAddress, i, i)) {
-                Helper.yield();
-            }
-            long end = System.nanoTime();
-            long time = end - start;
-            observe(i, time);
+            ping(messageSize, inCounterAddress, inDataAddress, outCounterAddress, outDataAddress, i);
         }
         report();
     }
+
+    private static void ping(int messageSize, long inCounterAddress, long inDataAddress, long outCounterAddress, long outDataAddress, int i) {
+        long start = System.nanoTime();
+        // copy message from in to out
+        UnsafeAccess.UNSAFE.copyMemory(inDataAddress, outDataAddress, messageSize);
+        UnsafeAccess.UNSAFE.putOrderedLong(null, inCounterAddress, i);
+        // wait for server to set counter
+        while (!UnsafeAccess.UNSAFE.compareAndSwapLong(null, outCounterAddress, i, i)) {
+            Helper.yield();
+        }
+        long end = System.nanoTime();
+        long time = end - start;
+        observe(i, time);
+    }
+
     private static void observe(int i, long time) {
         HISTOGRAM[i]=time;
     }

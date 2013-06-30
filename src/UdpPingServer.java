@@ -41,16 +41,7 @@ public class UdpPingServer {
         try {
             int read = 0;
             while (!Thread.interrupted()) {
-                buffy.clear();
-                while ((read = sc.read(buffy)) == 0){
-                    Helper.yield();
-                }
-                if (read == -1)
-                    return;
-                buffy.flip();
-                do {
-                    sc.write(buffy);
-                } while (buffy.hasRemaining());
+                if (pong(sc, buffy)) return;
             }
         } finally {
             if (sc != null) {
@@ -60,5 +51,20 @@ public class UdpPingServer {
                 }
             }
         }
+    }
+
+    private static boolean pong(DatagramChannel sc, ByteBuffer buffy) throws IOException {
+        int read;
+        buffy.clear();
+        while ((read = sc.read(buffy)) == 0){
+            Helper.yield();
+        }
+        if (read == -1)
+            return true;
+        buffy.flip();
+        do {
+            sc.write(buffy);
+        } while (buffy.hasRemaining());
+        return false;
     }
 }

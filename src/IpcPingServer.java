@@ -14,12 +14,8 @@
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
 import java.nio.channels.FileChannel.MapMode;
 
 public class IpcPingServer {
@@ -41,14 +37,18 @@ public class IpcPingServer {
         // wait for server to set counter
         for (int i = 0; i < 10; i++) {
             for (long counter = 0; counter < ITERATIONS; counter++) {
-                while (!UnsafeAccess.unsafe.compareAndSwapLong(null, inCounterAddress, counter, counter)){
-                    Helper.yield();
-                }
-                // copy message from out to in
-                UnsafeAccess.unsafe.copyMemory(outDataAddress, inDataAddress, messageSize);
-                // set client counter
-                UnsafeAccess.unsafe.putOrderedLong(null, outCounterAddress, counter);
+                pong(messageSize, inCounterAddress, inDataAddress, outCounterAddress, outDataAddress, counter);
             }
         }
+    }
+
+    private static void pong(int messageSize, long inCounterAddress, long inDataAddress, long outCounterAddress, long outDataAddress, long counter) {
+        while (!UnsafeAccess.UNSAFE.compareAndSwapLong(null, inCounterAddress, counter, counter)){
+            Helper.yield();
+        }
+        // copy message from out to in
+        UnsafeAccess.UNSAFE.copyMemory(outDataAddress, inDataAddress, messageSize);
+        // set client counter
+        UnsafeAccess.UNSAFE.putOrderedLong(null, outCounterAddress, counter);
     }
 }

@@ -6,17 +6,17 @@ import java.nio.ByteOrder;
 public class UnsafeDirectByteBuffer {
     private static final long addressOffset;
     public static final int CACHE_LINE_SIZE = 64;
-    public static final int PAGE_SIZE = UnsafeAccess.unsafe.pageSize();
+    public static final int PAGE_SIZE = UnsafeAccess.UNSAFE.pageSize();
     static {
         try {
-            addressOffset = UnsafeAccess.unsafe.objectFieldOffset(Buffer.class.getDeclaredField("address"));
+            addressOffset = UnsafeAccess.UNSAFE.objectFieldOffset(Buffer.class.getDeclaredField("address"));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     public static long getAddress(ByteBuffer buffy) {
-        return UnsafeAccess.unsafe.getLong(buffy, addressOffset);
+        return UnsafeAccess.UNSAFE.getLong(buffy, addressOffset);
     }
 
 

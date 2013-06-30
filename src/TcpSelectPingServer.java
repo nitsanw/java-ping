@@ -39,22 +39,8 @@ public class TcpSelectPingServer {
             serverSocket.close();
             Selector selector = Selector.open();
             accepted.register(selector, SelectionKey.OP_READ);
-            int read = 0;
             while (!Thread.interrupted()) {
-                while (selector.select() == 0) {
-                    Helper.yield();
-                }
-                selector.selectedKeys().clear();
-                buffy.clear();
-                while ((read = accepted.read(buffy)) == 0) {
-                    // Shouldn't happen, we got called on getting selected for READ, or invalid...
-                }
-                if (read == -1)
-                    return;
-                buffy.flip();
-                do {
-                    accepted.write(buffy);
-                } while (buffy.hasRemaining());
+                if (pong(buffy, accepted, selector)) return;
             }
         } finally {
             if (accepted != null) {
@@ -64,5 +50,24 @@ public class TcpSelectPingServer {
                 }
             }
         }
+    }
+
+    private static boolean pong(ByteBuffer buffy, SocketChannel accepted, Selector selector) throws IOException {
+        int read;
+        while (selector.select() == 0) {
+            Helper.yield();
+        }
+        selector.selectedKeys().clear();
+        buffy.clear();
+        while ((read = accepted.read(buffy)) == 0) {
+            // Shouldn't happen, we got called on getting selected for READ, or invalid...
+        }
+        if (read == -1)
+            return true;
+        buffy.flip();
+        do {
+            accepted.write(buffy);
+        } while (buffy.hasRemaining());
+        return false;
     }
 }

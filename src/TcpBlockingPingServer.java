@@ -37,14 +37,8 @@ public class TcpBlockingPingServer {
             accepted.socket().setTcpNoDelay(true);
             accepted.configureBlocking(true);
             serverSocket.close();
-            int read = 0;
             while (!Thread.interrupted()) {
-                read = accepted.read(buffy);
-                if (read == -1)
-                    return;
-                buffy.flip();
-                accepted.write(buffy);
-                buffy.flip();
+                if (pong(buffy, accepted)) return;
             }
         } finally {
             if (accepted != null) {
@@ -54,5 +48,16 @@ public class TcpBlockingPingServer {
                 }
             }
         }
+    }
+
+    private static boolean pong(ByteBuffer buffy, SocketChannel accepted) throws IOException {
+        int read;
+        read = accepted.read(buffy);
+        if (read == -1)
+            return true;
+        buffy.flip();
+        accepted.write(buffy);
+        buffy.flip();
+        return false;
     }
 }
