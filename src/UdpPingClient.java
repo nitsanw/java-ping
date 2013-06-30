@@ -69,10 +69,10 @@ public class UdpPingClient extends AbstractPingClient {
     void initParameters(String[] args) {
         host = args.length > 0 ? args[0] : "localhost";
         port = args.length > 1 ? Integer.parseInt(args[1]) : 12345;
-        localport = args.length > 1 ? Integer.parseInt(args[1]) : 22345;
-        messageSize = args.length > 2 ? Integer.parseInt(args[2]) : 32;
-        System.out.println("Pinging " + host + ":" + port + 
-                "(local:" + localport + ") messages of size " + messageSize);
+        localport = args.length > 2 ? Integer.parseInt(args[2]) : 22345;
+        messageSize = args.length > 3 ? Integer.parseInt(args[3]) : 32;
+        System.out.println("Udp client " + host + ":" + port +
+                "(binding to localhost:" + localport + ") messages of size " + messageSize);
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {

@@ -15,6 +15,7 @@ public class IpcPingClient {
         if (channel.size() < messageSize) {
             System.exit(-1);
         }
+        System.out.println("Ipc client file: ping.ipc messages of size " + messageSize);
         ByteBuffer buffy = channel.map(MapMode.READ_WRITE, 0, 2 * messageSize + 16 + 64 * 3);
         System.out.println("Min,50%,90%,99%,99.9%,99.99%,Max");
 

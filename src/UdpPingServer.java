@@ -24,8 +24,9 @@ public class UdpPingServer {
     public static void main(String[] args) throws IOException, InterruptedException {
         String host = args.length > 0 ? args[0] : "localhost";
         int localport = args.length > 1 ? Integer.parseInt(args[1]) : 12345;
-        int port = args.length > 1 ? Integer.parseInt(args[1]) : 22345;
-        System.out.println("Udp server on " + host + ":" + port);
+        int port = args.length > 2 ? Integer.parseInt(args[2]) : 22345;
+        System.out.println("Udp server " + host + ":" + port +
+                "(binding to localhost:" + localport + ")");
         DatagramChannel sc = DatagramChannel.open();
         sc.configureBlocking(false);
         // bind local

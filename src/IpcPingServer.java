@@ -31,6 +31,7 @@ public class IpcPingServer {
         if (channel.size() < messageSize) {
             channel.write(ByteBuffer.wrap(new byte[2 * messageSize + 16 + 64 * 3]));
         }
+        System.out.println("Ipc server file: ping.ipc messages of size " + messageSize);
         ByteBuffer buffy = channel.map(MapMode.READ_WRITE, 0, 2 * messageSize + 16 + 64 * 3);
         final long inCounterAddress = UnsafeDirectByteBuffer.getAddress(buffy) + 64;
         final long inDataAddress = inCounterAddress + 8;
