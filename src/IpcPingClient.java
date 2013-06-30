@@ -19,7 +19,7 @@ public class IpcPingClient {
         ByteBuffer buffy = channel.map(MapMode.READ_WRITE, 0, 2 * messageSize + 16 + 64 * 3);
         System.out.println("Min,50%,90%,99%,99.9%,99.99%,Max");
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 100; i++) {
             testLoop(messageSize, buffy);
         }
         channel.close();

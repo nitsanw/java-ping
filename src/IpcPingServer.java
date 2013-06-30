@@ -35,7 +35,7 @@ public class IpcPingServer {
         final long outDataAddress = outCounterAddress + 8;
 
         // wait for server to set counter
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 100; i++) {
             for (long counter = 0; counter < ITERATIONS; counter++) {
                 pong(messageSize, inCounterAddress, inDataAddress, outCounterAddress, outDataAddress, counter);
             }
