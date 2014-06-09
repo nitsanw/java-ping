@@ -39,7 +39,6 @@ public class UdpPingServer {
         Thread.sleep(10000);
         final ByteBuffer buffy = ByteBuffer.allocateDirect(PAGE_SIZE).order(ByteOrder.nativeOrder());
         try {
-            int read = 0;
             while (!Thread.interrupted()) {
                 if (pong(sc, buffy)) return;
             }

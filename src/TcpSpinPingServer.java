@@ -35,7 +35,6 @@ public class TcpSpinPingServer {
             accepted.socket().setTcpNoDelay(true);
             accepted.configureBlocking(false);
             serverSocket.close();
-            int read = 0;
             while (!Thread.interrupted()) {
                 if (pong(buffy, accepted)) return;
             }

@@ -11,7 +11,8 @@ public class IpcPingClient {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         int messageSize = args.length > 0 ? Integer.parseInt(args[0]) : 32;
-        FileChannel channel = new RandomAccessFile("ping.ipc", "rw").getChannel();
+        @SuppressWarnings("resource")
+		FileChannel channel = new RandomAccessFile("ping.ipc", "rw").getChannel();
         if (channel.size() < messageSize) {
             System.exit(-1);
         }
