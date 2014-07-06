@@ -19,13 +19,14 @@ public final class Helper {
         }
     }
     public static void waitSome(long nanos){
-    	if(nanos < 1000) {
+    	if(nanos < 10000) {
     		long until = System.nanoTime() + nanos - 40;
     		while(System.nanoTime() < until);
     		return;
     	}
     	else {
-            LockSupport.parkNanos(nanos);
+            LockSupport.parkNanos(nanos/2);
+            waitSome(nanos/2);
     	}
     }
 

@@ -78,7 +78,6 @@ public abstract class AbstractPingClient {
             i = pingRcv(i, buffy);
         }
         report();
-        
     }
 
     protected static void observe(int i, long time) {
