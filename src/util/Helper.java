@@ -1,3 +1,4 @@
+package util;
 import java.util.concurrent.locks.LockSupport;
 
 public final class Helper {
@@ -14,8 +15,18 @@ public final class Helper {
     }
     public static void waitSome(){
         if(SHOULD_WAIT){
-            LockSupport.parkNanos(WAIT_NANOS);
+        	waitSome(WAIT_NANOS);
         }
+    }
+    public static void waitSome(long nanos){
+    	if(nanos < 1000) {
+    		long until = System.nanoTime() + nanos - 40;
+    		while(System.nanoTime() < until);
+    		return;
+    	}
+    	else {
+            LockSupport.parkNanos(WAIT_NANOS);
+    	}
     }
 
 }

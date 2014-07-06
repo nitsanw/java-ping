@@ -1,7 +1,10 @@
+package coordinated;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
+
+import util.Helper;
 
 
 public abstract class AbstractPingClient {

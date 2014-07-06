@@ -1,3 +1,4 @@
+package uncoordinated;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
@@ -6,7 +7,7 @@ import java.nio.channels.SocketChannel;
 public abstract class TcpPingClient extends AbstractPingClient {
     SocketChannel channel;
 
-    public TcpPingClient(String[] args) throws IOException, InterruptedException {
+    public TcpPingClient(String[] args) throws Exception {
         super(args);
     }
     void initChannel() throws IOException {

@@ -1,3 +1,4 @@
+package coordinated;
 /*
  * Heavily inspired by http://code.google.com/p/core-java-performance-examples/source/browse/trunk/src/test/java/com/google/code/java/core/socket/PingTest.java
  * And therefore maintaining original licence:
@@ -13,27 +14,22 @@
  */
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
-public class TcpBlockingPingClient extends TcpPingClient {
+import util.Helper;
 
-    public TcpBlockingPingClient(String[] args) throws IOException, InterruptedException {
+public class TcpSelectPingClient extends TcpSelectNowPingClient{
+    public TcpSelectPingClient(String[] args) throws IOException, InterruptedException {
         super(args);
     }
+    
     @Override
-    protected boolean isBlocking() {
-        return true;
-    }
-    @Override
-    void ping(ByteBuffer bb) throws IOException {
-        // send
-        channel.write(bb);
-        bb.flip();
-        // receive
-        channel.read(bb);
-        bb.flip();
+    void select() throws IOException {
+        while (select.select() == 0) {
+            Helper.yield();
+        }
+        select.selectedKeys().clear();
     }
     public static void main(String[] args) throws IOException, InterruptedException {
-        new TcpBlockingPingClient(args);
+        new TcpSelectPingClient(args);
     }
 }

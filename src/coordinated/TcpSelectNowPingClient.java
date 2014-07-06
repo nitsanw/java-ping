@@ -1,3 +1,4 @@
+package coordinated;
 /*
  * Heavily inspired by http://code.google.com/p/core-java-performance-examples/source/browse/trunk/src/test/java/com/google/code/java/core/socket/PingTest.java
  * And therefore maintaining original licence:
@@ -16,6 +17,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
+
+import util.Helper;
 
 public class TcpSelectNowPingClient extends TcpPingClient {
     Selector select;

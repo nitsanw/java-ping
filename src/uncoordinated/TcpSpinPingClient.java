@@ -1,3 +1,4 @@
+package uncoordinated;
 /*
  * Heavily inspired by http://code.google.com/p/core-java-performance-examples/source/browse/trunk/src/test/java/com/google/code/java/core/socket/PingTest.java
  * And therefore maintaining original licence:
@@ -16,26 +17,47 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class TcpSpinPingClient extends TcpPingClient {
-    public TcpSpinPingClient(String[] args) throws IOException, InterruptedException {
+    public TcpSpinPingClient(String[] args) throws Exception {
         super(args);
     }
 
-    void ping(ByteBuffer bb) throws IOException {
-        // send
-        bb.position(0);
+	@Override
+	void pingSnd(ByteBuffer bb) throws IOException {
+		bb.position(0);
         bb.limit(messageSize);
         do {
             channel.write(bb);
         } while (bb.hasRemaining());
+	}
 
-        // receive
-        bb.clear();
-        int bytesRead = 0;
+	@Override
+	int pingRcv(int i, ByteBuffer buffy) throws IOException {
+        int bytesRead = buffy.position();
         do {
-            bytesRead += channel.read(bb);
+            bytesRead += channel.read(buffy);
         } while (bytesRead < messageSize);
-    }
-    public static void main(String[] args) throws IOException, InterruptedException {
+        
+        long end = System.nanoTime();
+        int leftOver = bytesRead % messageSize;
+        if(leftOver > 0) {
+        	buffy.limit(bytesRead);
+        	bytesRead = bytesRead - leftOver;
+        	buffy.position(bytesRead);
+		}        
+        for(int offset=0; offset < bytesRead;offset += messageSize) {
+        	long start = buffy.getLong(offset);
+        	observe(i++, end - start);
+        }
+        if(leftOver > 0) {
+        	buffy.compact();
+        }
+        else {
+        	buffy.clear();
+        }
+        return i;
+	}
+
+	public static void main(String[] args) throws Exception {
         new TcpSpinPingClient(args);
     }
 }

@@ -1,6 +1,11 @@
 import java.util.Arrays;
 
-public class PingMain {
+import coordinated.TcpBlockingPingClient;
+import coordinated.TcpSelectNowPingClient;
+import coordinated.TcpSelectPingClient;
+import coordinated.TcpSpinPingClient;
+
+public class TcpPingMain {
     public static void main(String[] args) throws Exception {
         if (args.length < 2) {
             usage();

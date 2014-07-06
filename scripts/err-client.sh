@@ -1,1 +1,1 @@
-java -server -cp lib/java-ping.jar ErrPingClient
+java -server -cp lib/java-ping.jar coordinated.ErrPingClient

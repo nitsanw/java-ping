@@ -1,3 +1,4 @@
+package coordinated;
 /*
  * Heavily inspired by http://code.google.com/p/core-java-performance-examples/source/browse/trunk/src/test/java/com/google/code/java/core/socket/PingTest.java
  * And therefore maintaining original licence:
