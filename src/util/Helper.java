@@ -25,7 +25,7 @@ public final class Helper {
     		return;
     	}
     	else {
-            LockSupport.parkNanos(WAIT_NANOS);
+            LockSupport.parkNanos(nanos);
     	}
     }
 

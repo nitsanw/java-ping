@@ -12,7 +12,8 @@ import util.Helper;
 
 public abstract class AbstractPingClient {
     private static final int PAGE_SIZE = 4096;
-    private static final int ITERATIONS = 100000;
+    private static final int ITERATIONS = Integer.getInteger("iterations", 100000);
+    private static final long WAIT_BETWEEN_SND = TimeUnit.MICROSECONDS.toNanos(Integer.getInteger("wait.us", 20));
     private static final long[] HISTOGRAM = new long[ITERATIONS];
     private static final int LOOP = Integer.getInteger("loop",30);
     int messageSize;
@@ -67,7 +68,7 @@ public abstract class AbstractPingClient {
             buffy.putLong(0, start);
             pingSnd(buffy);
             // wait 100us
-            Helper.waitSome(TimeUnit.MICROSECONDS.toNanos(1000));
+            Helper.waitSome(WAIT_BETWEEN_SND);
         }
         iterationBarrier.await();
         
