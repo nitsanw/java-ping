@@ -10,7 +10,7 @@ import util.Helper;
 import util.UnsafeAccess;
 import util.UnsafeDirectByteBuffer;
 
-public class IpcPingClient {
+public class IpcPingClientSOCAS {
     private static final int ITERATIONS = 1000000;
     private static final long[] HISTOGRAM = new long[ITERATIONS];
 

@@ -22,7 +22,7 @@ import util.Helper;
 import util.UnsafeAccess;
 import util.UnsafeDirectByteBuffer;
 
-public class IpcPingServer {
+public class IpcPingServerSOLV {
     private static final int ITERATIONS = 1000000;
 
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -48,7 +48,7 @@ public class IpcPingServer {
     }
 
     private static void pong(int messageSize, long inCounterAddress, long inDataAddress, long outCounterAddress, long outDataAddress, long counter) {
-        while (!UnsafeAccess.UNSAFE.compareAndSwapLong(null, inCounterAddress, counter, counter)){
+        while (counter != UnsafeAccess.UNSAFE.getLongVolatile(null, inCounterAddress)){
             Helper.yield();
         }
         // copy message from out to in

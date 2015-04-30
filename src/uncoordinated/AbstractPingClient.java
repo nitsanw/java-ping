@@ -15,6 +15,7 @@ public abstract class AbstractPingClient {
     private static final int ITERATIONS = Integer.getInteger("iterations", 100000);
     private static final long WAIT_BETWEEN_SND = TimeUnit.MICROSECONDS.toNanos(Integer.getInteger("wait.us", 20));
     private static final long[] HISTOGRAM = new long[ITERATIONS];
+ 
     private static final int LOOP = Integer.getInteger("loop",30);
     int messageSize;
     int port;
@@ -82,7 +83,6 @@ public abstract class AbstractPingClient {
 
     protected static void observe(int i, long time) {
         HISTOGRAM[i]=time;
-        
     }
 
     private static void report() {
