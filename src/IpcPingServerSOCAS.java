@@ -12,6 +12,8 @@
  * Further mutated by Nitsan Wakart.
  */
 
+import static util.UnsafeAccess.UNSAFE;
+
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
@@ -29,12 +31,20 @@ public class IpcPingServerSOCAS {
         int messageSize = args.length > 0 ? Integer.parseInt(args[0]) : 32;
         @SuppressWarnings("resource")
 		FileChannel channel = new RandomAccessFile("ping.ipc", "rw").getChannel();
+        // fill up the file if it's too small
         if (channel.size() < messageSize) {
             channel.write(ByteBuffer.wrap(new byte[2 * messageSize + 16 + 64 * 3]));
         }
         System.out.println("Ipc server file: ping.ipc messages of size " + messageSize);
         ByteBuffer buffy = channel.map(MapMode.READ_WRITE, 0, 2 * messageSize + 16 + 64 * 3);
+        // zero the buffer contents
+        while(buffy.hasRemaining()) {
+            buffy.put((byte) 0);
+        }
         final long inCounterAddress = UnsafeDirectByteBuffer.getAddress(buffy) + 64;
+        if (inCounterAddress % 8 != 0) {
+            throw new IllegalArgumentException("Counters should be 8 aligned");
+        }
         final long inDataAddress = inCounterAddress + 8;
         final long outCounterAddress = inDataAddress + 64 + messageSize;
         final long outDataAddress = outCounterAddress + 8;
@@ -48,12 +58,12 @@ public class IpcPingServerSOCAS {
     }
 
     private static void pong(int messageSize, long inCounterAddress, long inDataAddress, long outCounterAddress, long outDataAddress, long counter) {
-        while (!UnsafeAccess.UNSAFE.compareAndSwapLong(null, inCounterAddress, counter, counter)){
+        while (!UNSAFE.compareAndSwapLong(null, inCounterAddress, counter, counter)){
             Helper.yield();
         }
         // copy message from out to in
-        UnsafeAccess.UNSAFE.copyMemory(outDataAddress, inDataAddress, messageSize);
+        UNSAFE.copyMemory(outDataAddress, inDataAddress, messageSize);
         // set client counter
-        UnsafeAccess.UNSAFE.putOrderedLong(null, outCounterAddress, counter);
+        UNSAFE.putOrderedLong(null, outCounterAddress, counter);
     }
 }
